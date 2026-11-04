@@ -5,8 +5,11 @@
 Use Python 3.12+, OpenSSL, Samsung's SDB and the .NET 6 SDK. Install SDB through
 [Tizen Studio](https://developer.tizen.org/development/tizen-studio/download).
 The repository intentionally does not redistribute Samsung's executable.
-Set `SDB` to the absolute path of your installation. The commands below use a
-macOS/Linux shell; adapt the shell syntax if using Windows.
+Set `SDB` to the absolute path of your installation. Run host commands from
+the repository root. Most walkthrough examples use a macOS/Linux shell;
+PowerShell setup is shown below.
+
+### macOS/Linux shell
 
 ```sh
 export SDB=/absolute/path/to/tizen-studio/tools/sdb
@@ -17,9 +20,35 @@ tv() { python3 tools/tv.py --host "$TV_IP" --firmware "$TV_FIRMWARE" "$@"; }
 python3 tools/build.py payloads
 ```
 
+### Windows PowerShell 7
+
+Install Python 3.12+ and make it available as `python`. Replace the example
+SDB path with your installation's `sdb.exe`; keep OpenSSL and the .NET 6 SDK
+available on `PATH` as well.
+
+```powershell
+$env:SDB = 'C:\tizen-studio\tools\sdb.exe'
+$env:TV_IP = '192.0.2.50'
+# Read this exact version on YOUR TV; do not guess it.
+$env:TV_FIRMWARE = 'T-KSU2EFAKUC-0090-1300.9'
+function tv {
+    & python tools/tv.py --host $env:TV_IP --firmware $env:TV_FIRMWARE @args
+}
+python tools/build.py payloads
+```
+
 `192.0.2.50` is a documentation address, not a real target. The firmware
 argument records what the operator verified on screen. The helper separately
 checks the model reported by SDB and rejects other model/firmware combinations.
+Host shell support does not establish compatibility with another TV model.
+
+The `tv` examples with a single quoted remote command or `--script` use the
+same form in PowerShell. Replace `python3` with `python` for host-side tools.
+Join examples that use a trailing `\` onto one line; `\` is not PowerShell's
+line-continuation character. For complex remote SQL or nested shell quoting,
+save the remote commands in a UTF-8 `.sh` file and pass it with `--script`.
+The TV runs the script with `/bin/sh`; a Windows host does not need a local
+POSIX shell for `tv exec --script`.
 
 ## Enable Developer Mode on the TV
 
@@ -36,6 +65,15 @@ Guest-network isolation or a VPN can break the return connection.
 ```sh
 "$SDB" connect "$TV_IP:26101"
 "$SDB" devices
+tv doctor
+tv root-check
+```
+
+In PowerShell, invoke SDB with the call operator:
+
+```powershell
+& $env:SDB connect ($env:TV_IP + ':26101')
+& $env:SDB devices
 tv doctor
 tv root-check
 ```
@@ -80,9 +118,14 @@ output limit. Larger snapshots must be split or transferred with a separately
 reviewed tool; truncated output is never accepted.
 
 `exec --script` runs a reviewed script through the shell with optional repeated
-`--arg VALUE` positional arguments. There is a 30-second command budget; keep
-phases short. Logs are private and can contain device details. Do not attach
-raw session JSON to public issues.
+`--arg VALUE` positional arguments. The helper converts CRLF line endings to
+LF and decodes the base64 transport before invoking the TV's shell. The
+45,000-byte script limit is checked after line-ending conversion. Generated
+cleanup SQL and shell scripts are written as UTF-8 with LF on every host;
+tracked `.sh` recipes also use LF through `.gitattributes`. `push` transfers
+file bytes unchanged, so it does not normalize arbitrary uploaded scripts.
+There is a 30-second command budget; keep phases short. Logs are private and
+can contain device details. Do not attach raw session JSON to public issues.
 
 Use one SDB/root operation at a time. If route detection selects the wrong
 interface, pass `--callback-host COMPUTER_LAN_IP` **before** the subcommand.
@@ -93,6 +136,9 @@ After reboot, a stale SDB server may need:
 "$SDB" start-server
 "$SDB" connect "$TV_IP:26101"
 ```
+
+In PowerShell, use `& $env:SDB kill-server`, `& $env:SDB start-server`, then
+`& $env:SDB connect ($env:TV_IP + ':26101')`.
 
 Let each root session finish its cleanup before restarting or powering down.
 If interrupted, inspect the specific `archive-root-*` staging path reported

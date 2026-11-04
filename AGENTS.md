@@ -69,6 +69,13 @@ session; allow its cleanup checks to complete first.
 
 ## Local data and publication
 
+When present, read `.local/PROJECT-PROGRESS.md` as the current local progress
+summary and update it after project work with evidence, verification scope,
+remaining tasks and next steps. Keep historical evidence intact. This tracker
+is private: never stage, force-add, upload or reproduce its private contents in
+public reports. Only this generic instruction may be committed; the tracker
+must remain under the ignored `.local/` directory.
+
 Use `.local/` for device-specific plans, raw command output, screenshots,
 snapshots, builds and extracted framework assemblies. Use the ignored
 `launcher/assets/app-icons/` and `apps.local.json` for downloaded publisher art

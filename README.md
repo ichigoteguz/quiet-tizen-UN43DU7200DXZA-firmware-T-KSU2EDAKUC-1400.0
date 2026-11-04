@@ -96,6 +96,9 @@ Host tools use Python 3.12+ and the standard library. Raster artwork conversion
 optionally uses Pillow. Source builds use the .NET 6 SDK to match the tested
 TV; it is an older SDK and should be isolated from unrelated projects.
 Install Samsung's SDB separately.
+See [access setup](docs/02-access.md#prepare-the-computer) for macOS/Linux and
+Windows PowerShell commands. Host portability does not widen the supported
+TV model/firmware profile.
 
 ```sh
 python3 -m unittest discover -s tests -v
@@ -105,7 +108,9 @@ python3 tools/build.py launcher --framework .local/tv-framework
 ```
 
 GitHub Actions runs the offline tests and builds the open-source access
-payloads and app-catalog tests. The NUI launcher build needs Samsung reference
+payloads and app-catalog tests on Linux. Local Windows checks need a POSIX
+shell and `base64` on `PATH` to exercise the shell-based tests; otherwise those
+tests report skips. The NUI launcher build needs Samsung reference
 assemblies and is deliberately not built from redistributed SDK files.
 
 ## Credits

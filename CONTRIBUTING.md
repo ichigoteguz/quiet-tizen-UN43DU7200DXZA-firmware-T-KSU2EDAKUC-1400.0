@@ -25,6 +25,19 @@ python3 tools/build.py payloads
 dotnet run --project tests/CatalogTests.csproj -- launcher/assets/apps.json
 ```
 
+On Windows, use `python` in place of `python3`; see the
+[PowerShell access setup](docs/02-access.md#windows-powershell-7). Shell-based
+tests require a POSIX `sh` and, for script transport tests, `base64` on `PATH`
+(for example from Git for Windows). Report skips alongside passes; a Windows
+run that skips shell checks does not replace the Linux CI run.
+
+Keep tracked `.sh` files as LF, as specified in `.gitattributes`. Generated
+TV scripts and SQL must explicitly use UTF-8 and LF rather than host defaults.
+When changing script transport, verify actual shell execution, literal
+arguments and nonzero exit propagation. SQL generator changes need synthetic
+apply/restore and concurrent-drift checks. Close SQLite connections explicitly
+so temporary databases can be removed on Windows.
+
 NUI changes also need a build against matching private references and a
 clearly stated hardware-test status. Keep attribution/license files with
 derived assets and code.

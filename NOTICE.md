@@ -20,8 +20,8 @@ cards and text-only app placeholders were produced for this launcher.
 The source subset in `vendor/samsung_tv_root/` and `vendor/payload-source/`
 comes from [samsung-tv-root](https://github.com/chris-ritsen/samsung-tv-root/tree/4ad2c4d3b0d0e0da4b5b7ebe4a787e94596f416b),
 commit `4ad2c4d3b0d0e0da4b5b7ebe4a787e94596f416b`, under the
-Unlicense in `licenses/samsung-tv-root-Unlicense.txt`. The local runtime
-fallback is described in [provenance](docs/provenance.md).
+Unlicense in `licenses/samsung-tv-root-Unlicense.txt`. Local runtime and host
+portability changes are described in [provenance](docs/provenance.md).
 
 No Samsung SDB executable, firmware, SDK/reference assembly, stock app
 binary, account database or private backup is distributed.

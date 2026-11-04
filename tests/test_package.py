@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import unittest
@@ -28,6 +29,7 @@ class PackageTests(unittest.TestCase):
         for essential in ("com.samsung.tv.bixby-promotion", "org.tizen.menu", "com.samsung.tv.quicklaunch"):
             self.assertNotIn(essential, ids)
 
+    @unittest.skipUnless(shutil.which("sh"), "POSIX shell required")
     def test_shell_syntax(self):
         for path in (ROOT / "recipes").glob("*.sh"):
             subprocess.run(["sh", "-n", str(path)], check=True, capture_output=True)

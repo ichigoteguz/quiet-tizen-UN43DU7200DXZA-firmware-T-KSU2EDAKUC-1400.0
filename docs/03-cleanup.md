@@ -148,6 +148,31 @@ over the live one.
 later testing.** Recheck them after restart/update. Do not describe this as
 a permanent fix or silently add a background enforcement loop.
 
+That observation belongs to the U8000F/1300.9 case study. On another model,
+establish a separate baseline before attributing a changed value to Samsung.
+Keep these mechanisms distinct:
+
+| Mechanism | What to record | Persistence limit |
+|---|---|---|
+| Live WAS preference | Value and type of `db/was/preload_by_country` | Vendor code can rewrite it |
+| Cached WAS response | Row count, JSON type and `$.rsp.preloadByCountry` only | A catalog response can replace the cache |
+| Package metadata | Discovered `app_preload`, disable, onboot and autorestart fields | A flag does not prove an app is running; package updates may rewrite metadata |
+| Service controls | Unit state, vendor conditions and exact runtime/persistent override paths | `/run` masks expire at full restart; marker survival needs a separate check |
+| Home/startup selection | Both preferences and the main-operation handler | Verify each independently after an event |
+
+For a persistence comparison, save a small private record before and after
+one identified event. Include host UTC time, boot ID/uptime, the fields above,
+and relevant process names/PIDs. Discover the schema first and retain missing
+keys as unavailable rather than creating them. Avoid dumping the whole cached
+response or process arguments, which can contain device or account details.
+
+A changed boot ID establishes a new boot; standby/wake is a separate test.
+For a catalog refresh, retain evidence that a response was actually received;
+a cache hash or timestamp change alone does not identify the writer. If the
+initial setting was already enabled, finding it enabled again does not prove
+that anything was restored. Report unobserved transitions as untested, and
+respect the owner's existing power-test preferences.
+
 ## Verify the result
 
 Read the affected registry rows, unit `ActiveState`/`ConditionResult`,
